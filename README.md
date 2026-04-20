@@ -1,19 +1,18 @@
-# Digital-Banking
-Bhariq 
-  Membuat API untuk rekening digital banking
-  Membuat API informasi saldo terkini
-Laudy 
-  Membuat API mutasi rekening (menyediakan informasi riwayat transaksi)
-  Membuat API transfer internal (mentransfer dana antara rekening dalam bank yang sama)
-Jonathan 
-  Membuat API status transaksi (Memeriksa status transaksi antara sukses, pending, atau gagal)
-  Membuat API QRIS dan pembayaran digital (Memproses pembayaran berbasis QR atau e-wallet)
-Charlie 
-  Membuat API Oauth/OIDC (Untuk memastikan keamanan manajemen login nasabah yang aman)
-  Membuat API riwayat transaksi (Menampilkan daftar transaksi yang pernah dilakukan nasabah dalam    rentang waktu tertentu)
-Bunga  
-  Membuat API OTP (untuk otentikasi transaksi 2FA)
-  Membuat API pengelolaan kartu (mengaktifkan atau menonaktifkan kartu debit/ kredit secara          digital)
-Gerard 
-  Membuat API notifikasi (Mengirim notifikasi transaksi via email atau push notification)
-  Membuat API ubah PIN (Mengubah endpoint krusial untuk fitur keamanan akun nasabah)
+# Backend Programming Template (2025)
+
+## Development Setup
+
+1. Fork and clone this repository to your local computer.
+2. Open the project using VS Code.
+3. Install the recommended VS Code extensions: `ESLint` and `Prettier`.
+4. Copy and rename `.env.example` to `.env`. Open `.env` and change the database connection string.
+5. Run `npm install` to install the project dependencies.
+6. Run `npm run dev` to start the dev server.
+7. Test the endpoints in the API client app.
+
+## Add New API Endpoints
+
+1. Create a new database schema in `./src/models`.
+2. Create a new folder in `./src/api/components` (if needed). Remember to separate your codes to repositories, services, controllers, and routes.
+3. Add the new route in `./src/api/routes.js`.
+4. Test your new endpoints in the API client app.
