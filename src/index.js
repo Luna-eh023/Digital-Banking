@@ -14,6 +14,8 @@ const app = server.listen(port, (err) => {
 process.on('uncaughtException', (err) => {
   logger.fatal(err, 'Uncaught exception.');
 
+  // Routes
+
   // Shutdown the server gracefully
   app.close(() => process.exit(1));
 
