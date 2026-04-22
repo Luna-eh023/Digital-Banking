@@ -1,52 +1,46 @@
 const express = require('express');
 
-const router = express.Router();
-const Transaction = require('../models/transaction');
+const { Transaction } = require('../models');
 const books = require('./components/books/books-route');
 const users = require('./components/users/users-route');
 
-router.post('/transaction', async (req, res) => {
-  const data = await Transaction.create(req.body);
-  res.json(data);
-});
+module.exports = () => {
+  const app = express.Router();
 
-router.get('/transaction/:id/status', async (req, res) => {
-  try {
-    const trx = await Transaction.findById(req.params.id);
+  books(app);
+  users(app);
 
-    if (!trx) {
-      return res.status(404).json({
-        message: 'Transaksi tidak ditemukan',
+  app.post('/transaction', async (req, res) => {
+    try {
+      const data = await Transaction.create(req.body);
+      return res.json(data);
+    } catch (error) {
+      return res.status(500).json({
+        message: error.message,
       });
     }
+  });
 
-    return res.json({
-      id: trx.id,
-      status: trx.status,
-    });
-  } catch (error) {
-    return res.status(500).json({
-      message: error.message,
-    });
-  }
-});
+  app.get('/transaction/:id/status', async (req, res) => {
+    try {
+      const trx = await Transaction.findById(req.params.id);
 
-module.exports = () => {
-  const app = express.Router();
+      if (!trx) {
+        return res.status(404).json({
+          message: 'Transaksi tidak ditemukan',
+        });
+      }
 
-  books(app);
-  users(app);
-
-  return app;
-};
-
-module.exports = () => {
-  const app = express.Router();
-
-  books(app);
-  users(app);
+      return res.json({
+        id: trx.id,
+        status: trx.status,
+      });
+    } catch (error) {
+      return res.status(500).json({
+        message: error.message,
+      });
+    }
+  });
 
   return app;
 };
-
-module.exports = router;
