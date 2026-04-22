@@ -14,7 +14,13 @@ const getBalance = async (accountNumber) => {
   return account.balance
 }
 
+
+const getAllAccounts = async () => {
+  return await repo.getAllAccounts()
+}
+
 module.exports = {
   createAccount,
-  getBalance
+  getBalance,
+  getAllAccounts // ← jangan lupa export
 }

@@ -18,7 +18,25 @@ const getBalance = async (req, res) => {
   }
 }
 
+const getAllAccounts = async (req, res) => {
+  try {
+    const accounts = await service.getAllAccounts()
+
+    // 🔥 CLEAN OUTPUT
+    const clean = accounts.map(acc => ({
+      accountNumber: acc.accountNumber,
+      name: acc.name,
+      balance: acc.balance
+    }))
+
+    res.json(clean)
+  } catch (err) {
+    res.status(500).json({ message: err.message })
+  }
+}
+
 module.exports = {
   createAccount,
-  getBalance
+  getBalance,
+  getAllAccounts
 }
