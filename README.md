@@ -16,7 +16,7 @@ FUNGSI : Melakukan eksekusi undian gacha, memvalidasi limit harian user, dan mem
 RAW DATA (JSON) :
 JSON
 {
-  "user_id": "661f1a3a5b2c7e001234abcd"
+"user_id": "661f1a3a5b2c7e001234abcd"
 }
 
 2. ENDPOINT : GET /api/gacha/history/:userId
