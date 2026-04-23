@@ -59,4 +59,5 @@ module.exports = () => {
   users(app);
 
   return app;
-};
+  };
+}
