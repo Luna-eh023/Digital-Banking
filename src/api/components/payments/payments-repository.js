@@ -1,15 +1,15 @@
-const { Transaction } = require('../../../models');
+const models = require('../../../models');
 
 async function createTransaction(data) {
-  return Transaction.create(data);
+  return models.Transaction.create(data);
 }
 
 async function getTransactionById(id) {
-  return Transaction.findById(id);
+  return models.Transaction.findById(id);
 }
 
 async function updateTransactionStatus(id, status) {
-  return Transaction.updateOne({ _id: id }, { $set: { status } });
+  return models.Transaction.updateOne({ _id: id }, { $set: { status } });
 }
 
 module.exports = {
