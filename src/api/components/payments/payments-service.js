@@ -10,9 +10,23 @@ async function processEWalletPayment(user, amount) {
   return {
     transaction_id: transaction.id,
     amount: transaction.amount,
-    status: transaction.status,
-
+    // Dummy URL gateway
     payment_url: `https://checkout.gateway.com/v1/pay/${transaction.id}`,
+  };
+}
+
+async function getPaymentStatus(id) {
+  const transaction = await repository.getTransactionById(id);
+
+  if (!transaction) {
+    return null;
+  }
+
+  return {
+    transaction_id: transaction.id,
+    user: transaction.user,
+    amount: transaction.amount,
+    status: transaction.status,
   };
 }
 
@@ -31,5 +45,6 @@ async function handleGatewayNotification(payload) {
 
 module.exports = {
   processEWalletPayment,
+  getPaymentStatus,
   handleGatewayNotification,
 };

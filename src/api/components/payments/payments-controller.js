@@ -19,6 +19,21 @@ async function createPayment(request, response, next) {
   }
 }
 
+async function getPaymentStatus(request, response, next) {
+  try {
+    const { id } = request.params;
+    const result = await paymentsService.getPaymentStatus(id);
+
+    if (!result) {
+      throw errorResponder(errorTypes.NOT_FOUND, 'Transaction not found');
+    }
+
+    return response.status(200).json(result);
+  } catch (error) {
+    return next(error);
+  }
+}
+
 async function handleWebhook(request, response, next) {
   try {
     // Nerima notifikasi otomatis dari Payment Gateway
@@ -34,5 +49,6 @@ async function handleWebhook(request, response, next) {
 
 module.exports = {
   createPayment,
+  getPaymentStatus,
   handleWebhook,
 };

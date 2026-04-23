@@ -8,5 +8,7 @@ module.exports = (app) => {
 
   route.post('/charge', paymentsController.createPayment);
 
+  route.get('/:id/status', paymentsController.getPaymentStatus);
+
   route.post('/webhook', paymentsController.handleWebhook);
 };
