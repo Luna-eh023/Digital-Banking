@@ -1,54 +1,34 @@
-const transactionsService = require('./transaction-service');
-const { errorResponder, errorTypes } = require('../../../core/errors');
+const service = require('./transaction-service');
 
-async function createTransaction(request, response, next) {
+const transfer = async (req, res) => {
   try {
-    const { user, amount } = request.body;
+    const { fromAccount, toAccount, amount } = req.body;
 
-    if (!user || !amount) {
-      throw errorResponder(
-        errorTypes.VALIDATION,
-        'User and amount are required'
-      );
-    }
+    const result = await service.transfer(
+      fromAccount,
+      toAccount,
+      amount
+    );
 
-    const result = await transactionsService.processPayment(user, amount);
-    return response.status(200).json(result);
-  } catch (error) {
-    return next(error);
+    res.json(result);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
   }
-}
+};
 
-async function handleWebhook(request, response, next) {
+const getHistory = async (req, res) => {
   try {
-    // Menerima notifikasi otomatis dari Payment Gateway
-    await transactionsService.handleGatewayNotification(request.body);
+    const { accountNumber } = req.params;
 
-    return response
-      .status(200)
-      .json({ message: 'Webhook processed successfully' });
-  } catch (error) {
-    return next(error);
+    const data = await service.getHistory(accountNumber);
+
+    res.json(data);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
   }
-}
-
-async function getTransactionStatus(request, response, next) {
-  try {
-    const { id } = request.params;
-    const result = await transactionsService.getTransactionStatus(id);
-
-    if (!result) {
-      throw errorResponder(errorTypes.NOT_FOUND, 'Transaction not found');
-    }
-
-    return response.status(200).json(result);
-  } catch (error) {
-    return next(error);
-  }
-}
+};
 
 module.exports = {
-  createTransaction,
-  handleWebhook,
-  getTransactionStatus,
+  transfer,
+  getHistory
 };

@@ -1,50 +1,52 @@
-const repository = require('./transaction-repository');
+const repo = require('./transaction-repository');
 
-async function processPayment(user, amount) {
-  const transaction = await repository.createTransaction({
-    user,
+const transfer = async (fromAccount, toAccount, amount) => {
+  // Validasi input
+  if (!fromAccount || !toAccount || !amount) {
+    throw new Error('Incomplete data');
+  }
+
+  if (amount <= 0) {
+    throw new Error('Invalid amount');
+  }
+
+  // Ambil data akun
+  const sender = await repo.getAccountByNumber(fromAccount);
+  const receiver = await repo.getAccountByNumber(toAccount);
+
+  if (!sender || !receiver) {
+    throw new Error('Account not found');
+  }
+
+  // Cek saldo
+  if (sender.balance < amount) {
+    throw new Error('Insufficient balance');
+  }
+
+  // Update saldo
+  await repo.updateBalance(fromAccount, sender.balance - amount);
+  await repo.updateBalance(toAccount, receiver.balance + amount);
+
+  // Simpan transaksi
+  const transaction = await repo.createTransaction({
+    fromAccount,
+    toAccount,
     amount,
-    status: 'pending',
+    status: 'success'
   });
 
-  return {
-    transaction_id: transaction.id,
-    amount: transaction.amount,
-    status: transaction.status,
-    payment_url: `https://checkout.gateway.com/v1/pay/${transaction.id}`,
-  };
-}
+  return transaction;
+};
 
-async function handleGatewayNotification(payload) {
-  const { order_id: orderId, transaction_status: transactionStatus } = payload;
-
-  let finalStatus = 'pending';
-  if (['settlement', 'capture'].includes(transactionStatus)) {
-    finalStatus = 'success';
-  } else if (['expire', 'cancel', 'deny'].includes(transactionStatus)) {
-    finalStatus = 'failed';
+const getHistory = async (accountNumber) => {
+  if (!accountNumber) {
+    throw new Error('Account number required');
   }
 
-  return repository.updateTransactionStatus(orderId, finalStatus);
-}
-
-async function getTransactionStatus(id) {
-  const transaction = await repository.getTransactionById(id);
-
-  if (!transaction) {
-    return null;
-  }
-
-  return {
-    transaction_id: transaction.id,
-    user: transaction.user,
-    amount: transaction.amount,
-    status: transaction.status,
-  };
-}
+  return await repo.getTransactionsByAccount(accountNumber);
+};
 
 module.exports = {
-  processPayment,
-  handleGatewayNotification,
-  getTransactionStatus,
+  transfer,
+  getHistory
 };

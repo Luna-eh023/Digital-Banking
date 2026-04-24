@@ -1,19 +1,33 @@
-const { Transaction } = require('../../../models');
+const { Transaction, Account } = require('../../../models');
 
-async function createTransaction(data) {
-  return Transaction.create(data);
-}
+const getAccountByNumber = async (accountNumber) => {
+  return await Account.findOne({ accountNumber });
+};
 
-async function getTransactionById(id) {
-  return Transaction.findById(id);
-}
+const updateBalance = async (accountNumber, newBalance) => {
+  return await Account.findOneAndUpdate(
+    { accountNumber },
+    { balance: newBalance },
+    { new: true }
+  );
+};
 
-async function updateTransactionStatus(id, status) {
-  return Transaction.updateOne({ _id: id }, { $set: { status } });
-}
+const createTransaction = async (data) => {
+  return await Transaction.create(data);
+};
+
+const getTransactionsByAccount = async (accountNumber) => {
+  return await Transaction.find({
+    $or: [
+      { fromAccount: accountNumber },
+      { toAccount: accountNumber }
+    ]
+  }).sort({ createdAt: -1 });
+};
 
 module.exports = {
+  getAccountByNumber,
+  updateBalance,
   createTransaction,
-  getTransactionById,
-  updateTransactionStatus,
+  getTransactionsByAccount
 };

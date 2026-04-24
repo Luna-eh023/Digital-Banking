@@ -1,16 +1,26 @@
 module.exports = (mongoose) => {
   const transactionSchema = new mongoose.Schema(
     {
-      user: String,
-      amount: Number,
+      fromAccount: {
+        type: String,
+        required: true
+      },
+      toAccount: {
+        type: String,
+        required: true
+      },
+      amount: {
+        type: Number,
+        required: true
+      },
       status: {
         type: String,
         enum: ['success', 'pending', 'failed'],
-        default: 'pending',
-      },
+        default: 'success'
+      }
     },
     { timestamps: true }
   );
 
-  return mongoose.model('Transaction', transactionSchema);
+  return mongoose.models.Transaction || mongoose.model('Transaction', transactionSchema);
 };

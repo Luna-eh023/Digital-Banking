@@ -1,9 +1,9 @@
-const express = require('express')
-const router = express.Router()
+const express = require('express');
+const router = express.Router();
+const controller = require('./transaction-controller');
+const authMiddleware = require('../../middlewares/auth-middleware');
 
-// contoh endpoint
-router.get('/transactions', (req, res) => {
-  res.json({ message: 'Transactions route working' })
-})
+router.post('/transactions', authMiddleware, controller.transfer);
+router.get('/transactions/:accountNumber', authMiddleware, controller.getHistory);
 
-module.exports = router
+module.exports = router;
