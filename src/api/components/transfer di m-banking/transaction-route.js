@@ -2,10 +2,10 @@ const express = require('express');
 
 const router = express.Router();
 
-const transactionController = require('./transaction-controller');
+const controller = require('./transaction-controller');
 
-router.get('/transactions/:accountId', transactionController.getTransactions);
+router.get('/transactions/:accountNumber', controller.getTransactions);
 
-router.post('/transactions/transfer', transactionController.transfer);
+router.post('/transactions/transfer', controller.transfer);
 
 module.exports = router;

@@ -1,26 +1,29 @@
-const repo = require('./accounts-repository')
+const { Account } = require('../../../models');
 
-const createAccount = async (payload) => {
-  return await repo.createAccount(payload)
-}
+// ================= CREATE ACCOUNT =================
+const createAccount = async (data) => {
+  const account = await Account.create(data);
+  return account;
+};
 
+// ================= GET BALANCE =================
 const getBalance = async (accountNumber) => {
-  const account = await repo.getAccountByNumber(accountNumber)
+  const account = await Account.findOne({ accountNumber });
 
   if (!account) {
-    throw new Error('Account not found')
+    throw new Error('Account not found');
   }
 
-  return account.balance
-}
+  return account.balance;
+};
 
-
+// ================= GET ALL =================
 const getAllAccounts = async () => {
-  return await repo.getAllAccounts()
-}
+  return Account.find();
+};
 
 module.exports = {
   createAccount,
   getBalance,
-  getAllAccounts // ← jangan lupa export
-}
+  getAllAccounts,
+};

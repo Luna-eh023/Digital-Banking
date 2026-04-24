@@ -1,11 +1,16 @@
-const express = require('express')
-const router = express.Router()
-const controller = require('./accounts-controller')
+const express = require('express');
 
-router.post('/accounts', controller.createAccount)
+const router = express.Router();
 
-router.get('/accounts', controller.getAllAccounts)
+const controller = require('./accounts-controller');
 
-router.get('/accounts/:accountNumber/balance', controller.getBalance)
+// CREATE
+router.post('/accounts', controller.createAccount);
 
-module.exports = router
+// GET ALL
+router.get('/accounts', controller.getAllAccounts);
+
+// GET BALANCE
+router.get('/accounts/:accountNumber/balance', controller.getBalance);
+
+module.exports = router;

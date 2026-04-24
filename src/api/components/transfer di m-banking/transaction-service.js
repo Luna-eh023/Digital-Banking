@@ -1,82 +1,57 @@
 const {
-  getTransactionsByAccountId,
-  findAccountById,
+  getTransactionsByAccountNumber,
+  findAccountByNumber,
   updateAccountBalance,
   createTransaction,
 } = require('./transaction-repository');
 
-const { errorResponder, errorTypes } = require('../../../core/errors');
-
 const generateRef = () => `TRX${Date.now()}`;
 
-// ================= MUTASI =================
-async function getMutations(accountId) {
-  const transactions = await getTransactionsByAccountId(accountId);
+// ================= GET =================
+async function getMutations(accountNumber) {
+  const transactions = await getTransactionsByAccountNumber(accountNumber);
 
   return {
     status: 'success',
-    data: transactions.map((trx) => ({
-      date: trx.createdAt,
-      type: trx.type === 'credit' ? 'CR' : 'DB',
-      amount: trx.amount,
-      description: trx.description || 'Transfer',
-    })),
+    data: transactions,
   };
 }
 
 // ================= TRANSFER =================
-async function transferInternal(
-  fromAccountId,
-  toAccountId,
-  amount,
-  description
-) {
-  const fromAccount = await findAccountById(fromAccountId);
-  const toAccount = await findAccountById(toAccountId);
+async function transferInternal(fromAcc, toAcc, amount, description) {
+  const from = await findAccountByNumber(fromAcc);
+  const to = await findAccountByNumber(toAcc);
 
-  if (!fromAccount || !toAccount) {
-    throw errorResponder(errorTypes.NOT_FOUND, 'Account not found');
-  }
-
-  if (fromAccount.balance < amount) {
-    throw errorResponder(errorTypes.VALIDATION_ERROR, 'Insufficient balance');
-  }
+  if (!from || !to) throw new Error('Account not found');
+  if (from.balance < amount) throw new Error('Insufficient balance');
 
   const fee = 2500;
   const ref = generateRef();
-  await updateAccountBalance(fromAccountId, fromAccount.balance - amount - fee);
-  await updateAccountBalance(toAccountId, toAccount.balance + amount);
 
-  // simpan transaksi
+  await updateAccountBalance(fromAcc, from.balance - amount - fee);
+  await updateAccountBalance(toAcc, to.balance + amount);
+
   await createTransaction({
-    fromAccount: fromAccountId,
-    toAccount: toAccountId,
+    fromAccount: fromAcc,
+    toAccount: toAcc,
     amount,
     description,
     type: 'debit',
   });
 
   await createTransaction({
-    fromAccount: fromAccountId,
-    toAccount: toAccountId,
+    fromAccount: fromAcc,
+    toAccount: toAcc,
     amount,
     description,
     type: 'credit',
   });
 
   return {
-    status: 'success',
-    data: {
-      referenceNo: ref,
-      date: new Date(),
-      fromAccount: fromAccount.accountNumber,
-      toAccount: toAccount.accountNumber,
-      toName: toAccount.name,
-      amount,
-      fee,
-      description,
-      service: 'BI FAST',
-    },
+    referenceNo: ref,
+    fromAccount: fromAcc,
+    toAccount: toAcc,
+    amount,
   };
 }
 
