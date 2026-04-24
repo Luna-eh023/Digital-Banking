@@ -1,15 +1,9 @@
-const express = require('express');
-const transactionsController = require('./transaction-controller');
+const express = require('express')
+const router = express.Router()
 
-const route = express.Router();
+// contoh endpoint
+router.get('/transactions', (req, res) => {
+  res.json({ message: 'Transactions route working' })
+})
 
-module.exports = (app) => {
-  app.use('/transactions', route);
-
-  route.post('/charge', transactionsController.createTransaction);
-
-  route.post('/webhook', transactionsController.handleWebhook);
-
-  // Endpoint untuk mengecek status transaksi/pembayaran
-  route.get('/:id/status', transactionsController.getTransactionStatus);
-};
+module.exports = router
