@@ -8,8 +8,10 @@ const sms = require('./components/SMS/SMS-Route');
 
 const accountsRoutes = require('./components/accounts/accounts-route');
 const transactionsRoutes = require('./components/transactions/transaction-route');
+const authRoutes = require('./components/auth/auth-route');
 
 module.exports = () => {
+
   const app = express.Router();
 
   // ROUTES STYLE FUNCTION
