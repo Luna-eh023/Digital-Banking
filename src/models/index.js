@@ -5,17 +5,22 @@ const mongoose = require('mongoose');
 const config = require('../core/config');
 const logger = require('../core/logger')('app');
 
+// 🔥 FIX CONNECTION STRING (AMAN)
+const connectionString = `${config.database.connection}/${config.database.name}`;
+
 // 🔥 CONNECT DATABASE
-mongoose.connect(config.database.connection);
+mongoose.connect(connectionString);
 
 const db = mongoose.connection;
 
+// 🔥 ERROR HANDLER
 db.on('error', (err) => {
   logger.error(err, 'MongoDB connection error');
 });
 
+// 🔥 SUCCESS CONNECT
 db.once('open', () => {
-  logger.info('Successfully connected to MongoDB');
+  logger.info(`Successfully connected to MongoDB: ${connectionString}`);
 });
 
 const dbExports = {};
@@ -23,7 +28,7 @@ dbExports.db = db;
 
 const basename = path.basename(__filename);
 
-// 🔥 LOAD SEMUA MODEL (SUPPORT 2 FORMAT)
+// 🔥 LOAD SEMUA MODEL
 fs.readdirSync(__dirname)
   .filter(
     (file) =>
@@ -34,19 +39,32 @@ fs.readdirSync(__dirname)
   .forEach((file) => {
     const filePath = path.join(__dirname, file);
 
+    console.log("🔍 Loading model from:", file);
+
     const imported = require(filePath);
 
     let model;
 
-    // 🔥 Kalau export function → panggil
-    if (typeof imported === 'function') {
-      model = imported(mongoose);
-    } else {
-      // 🔥 Kalau langsung model → pakai langsung
-      model = imported;
-    }
+    try {
+      if (typeof imported === 'function') {
+        model = imported(mongoose);
+      } else {
+        model = imported;
+      }
 
-    dbExports[model.modelName] = model;
+      // 🔥 CEK MODEL VALID
+      if (!model || !model.modelName) {
+        console.warn(`⚠️ Model invalid dari file: ${file}`);
+        return;
+      }
+
+      dbExports[model.modelName] = model;
+    } catch (err) {
+      console.error(`❌ Error load model dari file: ${file}`, err.message);
+    }
   });
+
+// 🔥 DEBUG MODEL YANG KELOAD
+console.log('✅ Loaded models:', Object.keys(dbExports));
 
 module.exports = dbExports;
