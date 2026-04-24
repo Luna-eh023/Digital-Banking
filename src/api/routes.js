@@ -19,6 +19,7 @@ module.exports = () => {
   sms(app);
 
   app.use(accountsRoutes);
+  app.use(transactionRoutes);
 
   return app;
 };
