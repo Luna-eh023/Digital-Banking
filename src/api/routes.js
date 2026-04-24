@@ -22,6 +22,7 @@ module.exports = () => {
 
   // 🔥 SEMUA router pakai use
   app.use(accountsRoutes);
+  app.use(transactionRoutes);
   app.use(transactionsRoutes);
   app.use(authRoutes);
 
