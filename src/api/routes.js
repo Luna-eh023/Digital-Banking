@@ -14,17 +14,16 @@ module.exports = () => {
 
   const app = express.Router();
 
+  // ROUTES STYLE FUNCTION
   books(app);
   users(app);
   otp(app);
   card(app);
   sms(app);
 
-  // 🔥 SEMUA router pakai use
+  // ROUTES STYLE ROUTER
   app.use(accountsRoutes);
-  app.use(transactionRoutes);
-  app.use(transactionsRoutes);
-  app.use(authRoutes);
+  app.use(transactionsRoutes); // ✅ FIX DI SINI
 
   return app;
 };
